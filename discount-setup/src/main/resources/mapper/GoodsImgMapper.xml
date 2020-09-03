@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.setup.mapper.GoodsImgMapper">
+    <update id="updateGoodsIdByImgIds">
+        update goods_img set goods_id =#{goodsId}
+        where id in
+        <foreach collection="goodImgIdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+    <delete id="deleteByGoodsIds">
+        delete from goods_img
+        where goods_id in
+        <foreach collection="goodsIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getByParam" resultType="com.zl.setup.bo.GoodsImgBO">
+        select
+            id,
+            create_user,
+            create_time
+        from goods_img
+        <where>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getByIds" resultType="com.zl.setup.bo.GoodsImgBO">
+        select
+            id,
+            url
+        from goods_img
+        where id in
+        <foreach collection="goodImgIdList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

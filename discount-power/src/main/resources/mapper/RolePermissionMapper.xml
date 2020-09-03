@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.power.mapper.RolePermissionMapper">
+  <resultMap id="BaseResultMap" type="com.zl.power.entity.RolePermission">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    <result column="permission_id" jdbcType="BIGINT" property="permissionId" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <delete id="deleteByRoleId">
+    delete from role_permission where role_id =#{roleId}
+  </delete>
+  <select id="getPermissionIdsByRoleIds" resultType="long">
+    select permission_id from role_permission
+    where role_id in
+    <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+    <select id="getCountByPermissionId" resultType="java.lang.Integer">
+      select count(id) from role_permission
+      <where>
+        <if test="id != null and id !='' ">
+          and permission_id = #{id,jdbcType=BIGINT}
+        </if>
+      </where>
+    </select>
+
+
+  <resultMap id="roleBOMap" type="com.zl.power.bo.RolePermissionBO"  autoMapping="true">
+    <id column="role_id" property="roleId" />
+    <collection property="permissionLittleBOS" javaType="List" ofType="com.zl.power.bo.PermissionLittleBO" autoMapping="true">
+    </collection>
+  </resultMap>
+    <select id="getRolePermissionsByRoleIds" resultMap="roleBOMap">
+      SELECT
+      rp.role_id,
+      p.id,
+      p.alias,
+      p.type,
+      p.name,
+      p.pid
+      from role_permission rp
+      left join permission p on rp.permission_id = p.id
+      where rp.role_id in
+      <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+        #{item}
+      </foreach>
+    </select>
+
+
+
+
+
+</mapper>

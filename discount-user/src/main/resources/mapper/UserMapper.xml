@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.zl.user.entity.User">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="gender" jdbcType="VARCHAR" property="gender" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+  </resultMap>
+
+
+  <select id="login" resultType="string">
+    SELECT id FROM user
+    <where>
+      <if test="user != null and user.phone !='' and user.phone != null ">
+        and u.phone =#{upmsSeller.phone,jdbcType=VARCHAR}
+      </if>
+      <if test="user != null and user.password !='' and user.password != null ">
+        and u.password =#{upmsSeller.password,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <select id="getCountById" resultType="int">
+    SELECT count(id) FROM user
+    <where>
+      <if test="openid != null and openid !='' ">
+        and id =#{openid,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+</mapper>

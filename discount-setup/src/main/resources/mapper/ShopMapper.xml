@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.setup.mapper.ShopMapper">
+
+    <resultMap id="BaseResultMap" type="com.zl.setup.bo.ShopBO">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <id column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName" />
+        <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+        <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+        <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+        <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+        <result column="detail" jdbcType="VARCHAR" property="detail" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="contact" jdbcType="VARCHAR" property="contact" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="reason" jdbcType="VARCHAR" property="reason" />
+        <result column="lon" jdbcType="DOUBLE" property="lon" />
+        <result column="lat" jdbcType="DOUBLE" property="lat" />
+        <result column="categoryTitle" jdbcType="VARCHAR" property="categoryTitle" />
+        <result column="categoryId" jdbcType="BIGINT" property="categoryId" />
+        <collection property="shopImgBOS" ofType="com.zl.setup.bo.ShopImgBO" column="shop_id">
+            <id column="iid" jdbcType="VARCHAR" property="id" />
+            <result column="type" jdbcType="VARCHAR" property="type" />
+            <result column="url" jdbcType="VARCHAR" property="url" />
+        </collection>
+    </resultMap>
+
+
+
+    <select id="hasShop4Category" resultType="java.lang.Boolean">
+        select if(count(id) = 0,0,1) from shop where category_id =#{categoryId}
+    </select>
+
+
+    <select id="getShopInfo" resultMap="BaseResultMap">
+        select
+            s.id,
+            s.shop_name,
+            s.city_code,
+            s.province_name,
+            s.city_name,
+            s.area_name,
+            s.detail,
+            s.phone,
+            s.status,
+            s.reason,
+            s.contact,
+            c.title categoryTitle,
+            c.id categoryId,
+            si.id iid,
+            si.url
+        from shop s
+        left join category c on s.category_id = c.id
+        left join shop_img si on si.shop_id = s.id
+        where s.user_id =#{wxToken,jdbcType=VARCHAR}
+    </select>
+    <select id="getByParam" resultType="com.zl.setup.bo.ShopLittleBO">
+        select
+            s.id shopId,
+            s.shop_name,
+            s.area_name,
+            s.detail,
+            s.phone,
+            s.lon,
+            s.lat,
+            s.rate,
+            c.id categoryId,
+            c.title categoryTitle,
+            si.url
+        from shop s
+        left join category c on s.category_id = c.id
+        left join shop_img si on si.shop_id = s.id and si.type = 0
+        where s.status = 1
+    </select>
+
+    <select id="getByIdList" resultType="com.zl.setup.bo.Shop4FollowBO">
+        select
+            s.id sid,
+            s.shop_name,
+            s.area_name,
+            s.detail,
+            s.rate,
+            si.url
+            from shop s
+            left join shop_img si on si.shop_id = s.id and si.type = 0
+            where s.id in
+            <foreach collection="ids" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+    </select>
+    <select id="getIdByUserId" resultType="java.lang.Long">
+        select id from shop where user_id=#{userId}
+    </select>
+    <select id="getStatusByUserId" resultType="java.lang.Boolean">
+        select
+            if(status =1,TRUE,FALSE)
+        from shop
+        where user_id =#{userId}
+    </select>
+    <select id="getShopsByCategoryId" resultType="com.zl.setup.bo.ShopLittleBO">
+         select
+            s.id shopId,
+            s.shop_name,
+            s.area_name,
+            s.detail,
+            s.phone,
+            s.lon,
+            s.lat,
+            s.rate,
+            si.url
+        from shop s
+        left join category c on s.category_id = c.id
+        left join shop_img si on si.shop_id = s.id and si.type = 0
+
+        where s.status = 1 and s.category_id = #{categoryId}
+    </select>
+    <select id="getById" resultType="com.zl.setup.bo.ShopLittleBO">
+        select
+            s.id shopId,
+            s.shop_name,
+            s.area_name,
+            s.detail,
+            s.phone,
+            s.lon,
+            s.lat,
+            s.rate,
+            c.id categoryId,
+            c.title categoryTitle,
+            si.url
+        from shop s
+        left join category c on s.category_id = c.id
+        left join shop_img si on si.shop_id = s.id and si.type = 0
+        where s.id = #{shopId}
+    </select>
+    <select id="getMerchantIdByShopId" resultType="java.lang.Long">
+        select
+            s.user_id
+        from shop s
+        where s.id = #{shopId}
+    </select>
+    <select id="getByIds" resultType="com.zl.setup.bo.ShopLittleBO">
+        select
+            s.id shopId,
+            s.shop_name,
+            s.area_name,
+            s.detail,
+            si.url
+        from shop s
+        left join shop_img si on si.shop_id = s.id and si.type = 0
+        where s.id in
+        <foreach collection="shopIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="getByParam4Web" resultMap="BaseResultMap">
+         select
+            s.id,
+            s.user_id,
+            s.shop_name,
+            s.province_name,
+            s.city_name,
+            s.area_name,
+            s.contact,
+            s.status,
+            s.detail,
+            s.phone,
+            s.lon,
+            s.lat,
+            s.rate,
+            s.reason,
+            s.city_code,
+            c.id categoryId,
+            c.title categoryTitle
+        from shop s
+        left join category c on s.category_id = c.id
+        <where>
+            <if test="shopQueryDTO != null and shopQueryDTO.status != null ">
+                and s.status = #{shopQueryDTO.status,jdbcType=TINYINT}
+            </if>
+        </where>
+        order by s.create_time
+    </select>
+
+</mapper>

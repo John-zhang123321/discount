@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.ManagerMapper">
+  <resultMap id="BaseResultMap" type="com.zl.user.entity.Manager">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+    <result column="province_code" jdbcType="VARCHAR" property="provinceCode" />
+    <result column="region_name" jdbcType="VARCHAR" property="regionName" />
+    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="locked" jdbcType="TINYINT" property="locked" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+
+  <select id="getAccount" resultType="com.zl.user.entity.Manager">
+      select id,locked,password from manager
+      <where>
+        <if test="phone !=null and phone != '' ">
+          and phone =#{phone,jdbcType=VARCHAR}
+        </if>
+      </where>
+  </select>
+  <select id="login" resultType="com.zl.user.entity.Manager">
+      select id,locked from manager
+      <where>
+        <if test="managerLoginQueryDTO !=null and managerLoginQueryDTO.phone !=null and  managerLoginQueryDTO.phone != '' ">
+          and phone =#{managerLoginQueryDTO.phone,jdbcType=VARCHAR}
+        </if>
+        <if test="managerLoginQueryDTO !=null and managerLoginQueryDTO.password !=null and  managerLoginQueryDTO.password != '' ">
+          and password =#{managerLoginQueryDTO.password,jdbcType=VARCHAR}
+        </if>
+      </where>
+  </select>
+    <select id="getByParam" resultType="com.zl.user.bo.ManagerBo">
+      select
+        id,
+        province_code,
+        city_code,
+        region_name,
+        avatar,
+        email,
+        username,
+        phone,
+        locked,
+        create_user,
+        create_time
+     from manager
+      <where>
+        <if test="managerQueryDTO !=null and managerQueryDTO.cityName !=null and  managerQueryDTO.cityName != '' ">
+          and city_name like CONCAT('%',#{managerQueryDTO.cityName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="managerQueryDTO !=null and managerQueryDTO.username !=null and  managerQueryDTO.username != '' ">
+          and username like CONCAT('%',#{managerQueryDTO.username,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="managerQueryDTO !=null and managerQueryDTO.locked !=null and  managerQueryDTO.locked != '' ">
+          and locked =#{managerQueryDTO.locked,jdbcType=TINYINT}
+        </if>
+      </where>
+      order by create_time desc
+    </select>
+    <select id="getByCityCode" resultType="java.lang.String">
+         select email from manager where city_code = #{cityCode}
+    </select>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.CustomerMapper">
+
+    <select id="getByParam" resultType="com.zl.user.bo.CustomerBO">
+        select
+            id,
+            create_user,
+            create_time
+        from customer
+        <where>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getByOpenId" resultType="long">
+        select id from customer where open_id = #{openId};
+    </select>
+    <select id="getCustomerLittleBOByOpenId" resultType="com.zl.user.bo.CustomerLittleBO">
+        select
+            open_id,
+            nick_name,
+            avatar_url
+         from customer
+         where open_id = #{openId}
+    </select>
+    <select id="getOpenid" resultType="java.lang.String">
+        select
+            open_id
+         from customer
+         where id = #{customerId}
+    </select>
+</mapper>

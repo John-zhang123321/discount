@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.power.mapper.RoleMapper">
+    <resultMap id="BaseResultMap" type="com.zl.power.bo.RoleBO">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="data_scope" jdbcType="VARCHAR" property="dataScope" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+
+    <select id="getByParam" resultType="com.zl.power.bo.RoleBO">
+        SELECT
+        r.id,
+        r.name,
+        r.remark,
+        r.level,
+        r.create_time
+        from role r
+        <where>
+            <if test="roleQueryDTO != null and roleQueryDTO.name != null and roleQueryDTO.name !='' ">
+                and r.name LIKE CONCAT('%',#{roleQueryDTO.name,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by r.create_time
+  </select>
+    <select id="getRolesByRoleIds" resultType="com.zl.power.bo.RoleBO">
+        SELECT
+        r.id,
+        r.name,
+        r.remark,
+        r.data_scope,
+        r.level,
+        r.create_time
+        from role r
+        where r.id in
+        <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getAllRole" resultType="java.util.Map">
+         SELECT
+            r.id,
+            r.name
+         from role r
+    </select>
+</mapper>

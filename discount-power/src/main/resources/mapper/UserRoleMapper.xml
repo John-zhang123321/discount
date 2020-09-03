@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.power.mapper.UserRoleMapper">
+  <resultMap id="BaseResultMap" type="com.zl.power.entity.UserRole">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+    <update id="updateUserRole">
+      update user_role set role_id =#{roleId}  where user_id=#{userId}
+    </update>
+    <delete id="deleteByUid">
+      delete from user_role where user_id=#{userId}
+    </delete>
+    <select id="getRoleIdsByUid" resultType="long">
+    select role_id from user_role
+    <where>
+      <if test="uid != null and uid !='' ">
+        and user_id =#{uid,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+    <select id="getCountByRoleId" resultType="java.lang.Boolean">
+     select if(count(id)=0,0,1) from user_role
+      <where>
+        <if test="roleId !=null and roleId != '' ">
+          and role_id =#{roleId,jdbcType=BIGINT}
+        </if>
+      </where>
+    </select>
+    <select id="getRoleIdByUid" resultType="com.zl.power.bo.UserRoleBO">
+      select user_id,role_id from user_role
+      <where> user_id in
+        <foreach collection="mids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+      </where>
+    </select>
+</mapper>

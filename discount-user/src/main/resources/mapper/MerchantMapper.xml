@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.MerchantMapper">
+
+    <select id="getByParam" resultType="com.zl.user.bo.MerchantBO">
+        select
+            id,
+            create_user,
+            create_time
+        from merchant
+        <where>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getAccount" resultType="com.zl.user.entity.Merchant">
+        select id,locked,password from merchant
+        <where>
+            <if test="phone !=null and phone != '' ">
+                and phone =#{phone,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="getByOpenId" resultType="java.lang.Long">
+        select id from merchant where open_id =#{openId}
+    </select>
+    <select id="getById" resultType="java.lang.Boolean">
+       select if(count(id) = 0,0,1) from merchant where id =#{userId}
+    </select>
+    <select id="getByCreateUsers" resultType="com.zl.user.bo.CommentCustomerBO">
+        select
+            id userId,
+            nick_name,
+            avatar_url
+        from merchant
+        where id in
+        <foreach collection="createUsers" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

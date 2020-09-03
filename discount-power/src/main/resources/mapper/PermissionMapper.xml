@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.power.mapper.PermissionMapper">
+  <resultMap id="BaseResultMap" type="com.zl.power.entity.Permission">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="alias" jdbcType="VARCHAR" property="alias" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="pid" jdbcType="BIGINT" property="pid" />
+    <result column="component" jdbcType="VARCHAR" property="component" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="sort" jdbcType="BIGINT" property="sort" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+
+
+  <resultMap id="PermissionVoResultMap" type="com.zl.power.bo.PermissionBO">
+      <result column="pName" jdbcType="VARCHAR" property="name" />
+      <result column="alias" jdbcType="VARCHAR" property="alias" />
+      <result column="component" jdbcType="VARCHAR" property="component" />
+      <result column="pid" jdbcType="BIGINT" property="pid" />
+      <result column="path" jdbcType="VARCHAR" property="path" />
+      <result column="type" jdbcType="INTEGER" property="type" />
+      <result column="sort" jdbcType="INTEGER" property="sort" />
+      <result column="icon" jdbcType="VARCHAR" property="icon" />
+  </resultMap>
+
+
+
+    <select id="getByUserId" resultMap="PermissionVoResultMap">
+    SELECT
+    p.id permissionId,
+    p.name pName,
+    p.type,
+    p.alias,
+    p.pid,
+    p.path,
+    p.sort,
+    p.icon,
+    p.component
+    from (select * from user_role where user_id = #{uid}) ur
+    left join role r on r.id = ur.role_id
+    left join role_permission rp on rp.role_id = r.id
+    left join permission p on p.id = rp.permission_id
+    order by p.sort
+  </select>
+
+    <select id="getAll" resultType="com.zl.power.bo.PermissionSmallBO">
+    SELECT
+    p.id,
+    p.type,
+    p.alias label,
+    p.pid,
+    p.path,
+    p.sort,
+    p.icon,
+    p.component
+    from permission p
+  </select>
+
+  <select id="tree" resultType="com.zl.power.bo.PermissionLittleBO">
+    SELECT
+    p.id,
+    p.type,
+    p.pid,
+    p.alias
+    from permission p
+  </select>
+
+
+  <resultMap id="PermissionSmallResultMap" type="com.zl.power.bo.PermissionSmallBO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="alias" jdbcType="VARCHAR" property="alias" />
+    <result column="pid" jdbcType="BIGINT" property="pid" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <select id="getByParam" resultType="com.zl.power.bo.PermissionBO">
+    SELECT
+    id,
+    alias,
+    name,
+    pid,
+    type,
+    icon,
+    path,
+    sort,
+    icon,
+    if(component ='Layout','',component) component,
+    create_time
+    from permission
+    <where>
+      <if test="permissionParamDTO != null and permissionParamDTO.name != null and permissionParamDTO.name !='' ">
+        and alias LIKE CONCAT(CONCAT('%',#{permissionParamDTO.name,jdbcType=VARCHAR}),'%')
+      </if>
+    </where>
+  </select>
+  <select id="getPermissionsByPermissionIds" resultType="com.zl.power.bo.PermissionBO">
+       SELECT
+          p.id,
+          p.alias,
+          p.name,
+          p.pid,
+          p.type,
+          p.icon,
+          p.path,
+          p.sort,
+          p.component,
+          p.create_time
+      from permission p
+      left join role_permission rp on rp.permission_id = p.id
+      left join user_role ur on ur.role_id = rp.role_id
+      where ur.user_id = #{uid}
+  </select>
+    <select id="getPidByPermission" resultType="java.lang.Integer">
+        SELECT
+        pid
+        from permission
+        <where>
+            <if test="id != null and id !='' ">
+                and id =#{id,jdbcType=BIGINT})
+            </if>
+        </where>
+    </select>
+
+    <select id="getByRoleIds" resultType="com.zl.power.bo.PermissionBO">
+        SELECT
+        id,
+        alias,
+        name,
+        pid,
+        type,
+        icon,
+        path,
+        sort,
+        component,
+        create_time
+        from permission
+        where id in
+        <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getLittlePermission" resultType="com.zl.power.bo.PermissionLittleBO">
+        SELECT
+        id,
+        alias,
+        pid,
+        type
+        from permission
+        where id in
+        <foreach collection="permissionIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteByPid">
+        delete from permission
+        <where>
+            <if test="id != null and id !='' ">
+                and pid =#{id,jdbcType=BIGINT})
+            </if>
+        </where>
+    </delete>
+</mapper>

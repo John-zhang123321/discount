@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.CommentMapper">
+
+    <select id="getByParam" resultType="com.zl.user.bo.CommentBO">
+        select
+            id,
+            content ,
+            rate ,
+            create_user ,
+            create_time 
+        from comment
+        <where>
+            <if test="commentQueryDTO !=null and commentQueryDTO.createUser !=null and  commentQueryDTO.createUser != '' ">
+                and create_user like CONCAT('%',#{commentQueryDTO.createUser,jdbcType=BIGINT},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <resultMap id="BaseResultMap" type="com.zl.user.bo.CommentBO">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_user" jdbcType="BIGINT" property="createUser" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="rate" jdbcType="INTEGER" property="rate" />
+        <result column="crid" jdbcType="BIGINT" property="userId" />
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+        <result column="pid" jdbcType="BIGINT" property="pid" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <collection property="commentImgBOS" ofType="com.zl.user.bo.CommentImgBO">
+            <id column="ciid" jdbcType="VARCHAR" property="id" />
+            <result column="url" jdbcType="VARCHAR" property="url" />
+        </collection>
+    </resultMap>
+
+
+    <select id="getByShopId" resultMap="BaseResultMap">
+        select
+            c.id,
+            c.content,
+            c.rate,
+            c.pid,
+            c.create_user,
+            c.create_time,
+            c.rate,
+            cr.id crid,
+            cr.nick_name,
+            cr.avatar_url,
+            ci.id ciid,
+            ci.url
+        from comment c
+        left join comment_img ci on ci.comment_id = c.id
+        left join customer cr on cr.id = c.create_user
+        <where>
+            <if test="shopId !=null and shopId != '' ">
+                and c.shop_id = #{shopId,jdbcType=BIGINT}
+            </if>
+        </where>
+    </select>
+    <select id="getCountByPid" resultType="java.lang.Integer">
+        select count(id) from comment where pid=#{pid}
+    </select>
+    <select id="getRateByShopId" resultType="java.lang.Double">
+        select TRUNCATE(sum(rate)/ count(id),1) from comment where shop_id=#{shopId} and pid = 0
+    </select>
+</mapper>

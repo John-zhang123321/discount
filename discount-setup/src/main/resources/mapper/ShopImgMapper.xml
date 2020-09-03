@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.setup.mapper.ShopImgMapper">
+
+    <select id="getByParam" resultType="com.zl.setup.bo.ShopImgBO">
+        select
+            id,
+            create_user,
+            create_time
+        from shop_img
+        <where>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getUrlByShopId" resultType="java.lang.String">
+        select
+            url
+        from shop_img
+        where shop_id =#{shopId} and type = 0
+    </select>
+    <select id="getByShopIds" resultType="com.zl.setup.bo.ShopImgBO">
+        select
+            id,
+            shop_id,
+            if(type = 0,'店铺图片','营业执照') type,
+            url
+        from shop_img
+        where shop_id in
+        <foreach collection="shopIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

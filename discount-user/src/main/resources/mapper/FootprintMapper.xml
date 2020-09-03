@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.FootprintMapper">
+    <select id="getByUserIdAndShopId" resultType="java.lang.Long">
+        select id from footprint where user_id =#{userId} and shop_id=#{shopId}
+    </select>
+    <select id="getByExpired" resultType="com.zl.user.bo.FootprintLittleBO">
+        select id,user_id from footprint where DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(access_time))
+    </select>
+    <select id="getByParam" resultType="com.zl.user.bo.FootprintBO">
+        select
+            id,
+            shop_id,
+            access_time
+        from footprint
+        where user_id =#{userId}
+        order by access_time desc
+    </select>
+</mapper>

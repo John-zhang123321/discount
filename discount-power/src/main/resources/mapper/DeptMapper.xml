@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.power.mapper.DeptMapper">
+
+    <select id="getByParam" resultType="com.zl.power.bo.DeptBO">
+        select
+            id,
+            name,
+            pid,
+            level,
+            create_user,
+            create_time
+        from dept
+        <where>
+            <if test="deptQueryDTO !=null and deptQueryDTO.name !=null and  deptQueryDTO.name != '' ">
+                and name like CONCAT('%',#{deptQueryDTO.name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="deptQueryDTO !=null and deptQueryDTO.pid !=null and  deptQueryDTO.pid != '' ">
+                and pid =#{deptQueryDTO.pid,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

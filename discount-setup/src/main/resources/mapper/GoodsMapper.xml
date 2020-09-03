@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.setup.mapper.GoodsMapper">
+    <resultMap id="BaseResultMap" type="com.zl.setup.bo.GoodsBO">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="original_price_max" jdbcType="DECIMAL" property="originalPriceMax" />
+        <result column="original_price_min" jdbcType="DECIMAL" property="originalPriceMin" />
+        <result column="present_price_max" jdbcType="DECIMAL" property="presentPriceMax" />
+        <result column="present_price_min" jdbcType="DECIMAL" property="presentPriceMin" />
+        <result column="proportion" jdbcType="INTEGER" property="proportion" />
+        <result column="start_time" jdbcType="DATE" property="startTime" />
+        <result column="end_time" jdbcType="DATE" property="endTime" />
+        <result column="love" jdbcType="INTEGER" property="love" />
+        <result column="sale" jdbcType="INTEGER" property="sale" />
+        <collection property="goodsImgBOS" ofType="com.zl.setup.bo.GoodsImgBO">
+            <id column="iid" jdbcType="BIGINT" property="id" />
+            <result column="url" jdbcType="VARCHAR" property="url" />
+        </collection>
+    </resultMap>
+    <delete id="deleteExpired">
+        delete from goods where now() > end_time
+    </delete>
+    <select id="getByParam" resultMap="BaseResultMap">
+        select
+            g.id,
+            g.shop_id,
+            g.name,
+            g.remark,
+            g.proportion,
+            g.original_price_max,
+            g.original_price_min,
+            g.present_price_max,
+            g.present_price_min,
+            g.start_time,
+            g.end_time,
+            g.love,
+            g.sale,
+            i.id iid,
+            i.url
+        from goods g
+        left join goods_img i on i.goods_id = g.id
+        <where>
+            g.user_id =#{goodsQueryDTO.userId}
+        </where>
+        order by g.create_time desc
+    </select>
+    <select id="getByShopId" resultMap="BaseResultMap">
+        select
+            g.id,
+            g.shop_id,
+            g.name,
+            g.remark,
+            g.original_price_max,
+            g.original_price_min,
+            g.present_price_max,
+            g.present_price_min,
+            g.start_time,
+            g.end_time,
+            g.love,
+            g.sale,
+            i.id iid,
+            i.url
+        from goods g
+        left join goods_img i on i.goods_id = g.id
+        <where>
+            g.shop_id =#{shopId}
+        </where>
+        order by g.create_time desc
+    </select>
+    <select id="getProportionByGoodsId" resultType="int">
+        select proportion from goods where id = #{goodsId}
+    </select>
+
+    <resultMap id="expiredResultMap" type="com.zl.setup.bo.ExpiredGoodsBO">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <collection property="goodsImgBOS" ofType="com.zl.setup.bo.GoodsImgBO">
+            <id column="iid" jdbcType="BIGINT" property="id" />
+            <result column="url" jdbcType="VARCHAR" property="url" />
+        </collection>
+    </resultMap>
+    <select id="getExpired" resultMap="expiredResultMap">
+        select
+            g.id,
+            g.shop_id,
+            g.user_id,
+            gi.id iid,
+            gi.url
+        from goods g
+        left join goods_img gi on g.id = gi.goods_id
+        where now() > g.end_time
+    </select>
+    <select id="search" resultType="java.lang.Long">
+        select distinct shop_id from goods where `name` like CONCAT('%',#{goodsName},'%')
+    </select>
+</mapper>

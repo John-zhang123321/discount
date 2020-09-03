@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.BaseRegionMapper">
+  <resultMap id="BaseResultMap" type="com.zl.user.entity.BaseRegion">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="parent_region_id" jdbcType="INTEGER" property="parentRegionId" />
+    <result column="region_name" jdbcType="VARCHAR" property="regionName" />
+    <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+    <result column="depth" jdbcType="INTEGER" property="depth" />
+  </resultMap>
+  <select id="getByCityCode" resultType="com.zl.user.bo.BaseRegionBo">
+    select
+      city_code,
+      region_name
+    from base_region
+    where city_code in
+    <foreach collection="cityCodes" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+  <select id="getCityByParam" resultType="com.zl.user.bo.BaseRegionBo">
+    select
+      id,
+      city_code,
+      region_name,
+      parent_region_id,
+      depth
+    from base_region
+    <where>
+        depth != 3
+      <if test="baseRegionQueryDTO.regionName !=null and baseRegionQueryDTO.regionName !=''  ">
+        and region_name like CONCAT('%',#{baseRegionQueryDTO.regionName,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </select>
+    <select id="getBaseRegion" resultType="com.zl.user.bo.BaseRegionBo">
+      select
+        id,
+        city_code,
+        region_name,
+        parent_region_id,
+        depth
+      from base_region
+    </select>
+</mapper>

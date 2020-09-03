@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.CouponMapper">
+    <update id="expiredCouponByGoodsIds">
+        update coupon set status = 2
+        where goods_id in
+        <foreach collection="goodsIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="getByParam" resultType="com.zl.user.bo.CouponBO">
+        select
+            id,
+            shop_id,
+            goods_id,
+            proportion,
+            qr_code,
+            status,
+            shop_name,
+            shop_url,
+            shop_detail,
+            goods_name,
+            goods_url,
+            user_id
+        from coupon
+        where user_id =#{couponQueryDTO.userId}
+        order by status asc,create_time desc
+    </select>
+    <select id="getExistByGoodsIdAndUserId" resultType="java.lang.Boolean">
+        select if(count(id) >= 1,1,0) from coupon where goods_id =#{goodsId} and user_id =#{userId}
+    </select>
+    <select id="getCouponByUserIdAndShopId" resultType="java.lang.Long">
+        select goods_id from coupon where shop_id =#{shopId} and user_id =#{userId}
+    </select>
+    <select id="getByGoodsIds" resultType="com.zl.user.bo.CouponBO">
+        select
+            id,
+            shop_id,
+            goods_id,
+            proportion,
+            qr_code,
+            status,
+            shop_name,
+            shop_url,
+            shop_detail,
+            goods_name,
+            goods_url,
+            user_id
+            from coupon
+        where goods_id in
+        <foreach collection="goodsIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.PostMapper">
+  <resultMap id="BaseResultMap" type="com.zl.user.entity.Post">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="category_id" jdbcType="VARCHAR" property="categoryId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+
+  <select id="getNewPosts" resultType="map">
+    SELECT
+    id ,
+    title,
+    url,
+    content
+    FROM post
+    order by create_time desc
+  </select>
+
+  <select id="getPopularPosts" resultType="map">
+    SELECT
+    id,
+    title,
+    url,
+    content
+    FROM post  where p.discuss > 20 or look > 100
+    order by discuss desc,look desc
+  </select>
+</mapper>

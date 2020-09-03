@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.FollowMapper">
+    <delete id="deleteByShopIAndUserId">
+        delete from  follow where shop_id=#{shopId} and user_id =#{userId}
+    </delete>
+
+    <select id="getByParam" resultType="com.zl.user.bo.FollowLittleBO">
+        select
+            f.id fid,
+            f.shop_id sid
+        from follow f
+        <where>
+            <if test="followQueryDTO !=null and followQueryDTO.userId !=null and  followQueryDTO.userId != '' ">
+                and user_id=#{followQueryDTO.userId,jdbcType=BIGINT}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getUserIdsByShopId" resultType="string">
+        select user_id from follow where shop_id=#{shopId}
+    </select>
+    <select id="getByShopIAndUserId" resultType="java.lang.Long">
+        select id from follow where user_id =#{userId} and shop_id=#{shopId}
+    </select>
+    <select id="getFollowStatusByShopIdAndUserId" resultType="java.lang.Boolean">
+        select if(count(id) = 1,1,0) from follow where user_id =#{userId} and shop_id=#{shopId}
+    </select>
+</mapper>

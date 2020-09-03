@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.SearchHistoryMapper">
+    <delete id="deleteByUserId">
+        delete from search_history where user_id =#{userId}
+    </delete>
+
+    <select id="getByParam" resultType="com.zl.user.bo.SearchHistoryBO">
+        select
+            id,
+            keywords 
+        from search_history
+        <where>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zl.user.mapper.FeedbackMapper">
+
+    <select id="getByParam" resultType="com.zl.user.bo.FeedbackBO">
+        select
+            id,
+            content,
+            contact,
+            create_user,
+            create_time
+        from feedback
+        <where>
+            <if test="feedbackQueryDTO.content !=null and feedbackQueryDTO.content != '' ">
+                and content like CONCAT('%',#{feedbackQueryDTO.content,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="feedbackQueryDTO.contact !=null and feedbackQueryDTO.contact != '' ">
+                and contact like CONCAT('%',#{feedbackQueryDTO.contact,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>
